@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test AIQ — Maturité IA & Temps perdu</title>
+    <style>
+      :root { font-family: Inter, system-ui, -apple-system, sans-serif; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: linear-gradient(180deg, #020617, #0f172a 60%, #1e1b4b); color: #f1f5f9; min-height: 100vh; }
+      .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px; }
+      .card { background: rgba(15,23,42,.85); border: 1px solid #334155; border-radius: 16px; padding: 32px; }
+      .badge { display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(99,102,241,.2); color: #a5b4fc; margin-bottom: 16px; }
+      h1 { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
+      h2 { font-size: 19px; font-weight: 600; line-height: 1.45; margin-bottom: 20px; }
+      .sub { color: #94a3b8; font-size: 14px; line-height: 1.6; }
+      .features { margin: 20px 0; display: grid; gap: 8px; font-size: 14px; color: #cbd5e1; }
+      .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; background: #6366f1; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; transition: background .2s; }
+      .btn:hover { background: #4f46e5; }
+      .btn-sm { width: auto; padding: 8px 18px; font-size: 13px; }
+      .back { background: none; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 16px; }
+      .progress-track { height: 6px; background: #1e293b; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
+      .progress-fill { height: 100%; background: linear-gradient(90deg,#6366f1,#22d3ee); border-radius: 3px; transition: width .3s; }
+      .meta { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 8px; }
+      .rep { display: block; width: 100%; text-align: left; padding: 14px 16px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #475569; background: rgba(30,41,59,.6); color: #e2e8f0; font-size: 14px; cursor: pointer; transition: all .15s; }
+      .rep:hover { border-color: #6366f1; background: rgba(99,102,241,.25); }
+      .time-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 8px; }
+      .time-row label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+      .time-row .hint { font-size: 12px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
+      input[type=range] { width: 100%; accent-color: #6366f1; }
+      .time-val { font-size: 13px; color: #a5b4fc; font-weight: 700; }
+      .result-big { text-align: center; margin-bottom: 28px; }
+      .score-circle { font-size: 52px; font-weight: 800; }
+      .score-label { font-size: 13px; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; padding: 6px 16px; border-radius: 999px; display: inline-block; margin-bottom: 12px; }
+      .axis-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; }
+      .axis-name { flex: 0 0 190px; color: #cbd5e1; }
+      .axis-track { flex: 1; height: 14px; background: #1e293b; border-radius: 7px; overflow: hidden; }
+      .axis-fill { height: 100%; border-radius: 7px; }
+      .axis-val { flex: 0 0 40px; text-align: right; font-weight: 700; }
+      .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+      .kpi { background: rgba(30,41,59,.7); border: 1px solid #334155; border-radius: 12px; padding: 16px; text-align: center; }
+      .kpi b { display: block; font-size: 26px; color: #34d399; }
+      .kpi span { font-size: 11px; color: #94a3b8; }
+      .gain-box { background: rgba(16,185,129,.12); border: 1px solid rgba(52,211,153,.4); border-radius: 12px; padding: 20px; margin-top: 20px; }
+      .recs { margin-top: 12px; }
+      .rec { background: rgba(30,41,59,.6); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.5; }
+      .lead-form { margin-top: 24px; }
+      .lead-form input { width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: #f1f5f9; font-size: 15px; margin-bottom: 10px; }
+      .ok { background: rgba(16,185,129,.15); border: 1px solid rgba(52,211,153,.4); border-radius: 12px; padding: 18px; font-size: 14px; margin-top: 20px; }
+      .note { font-size: 11px; color: #64748b; text-align: center; margin-top: 12px; }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="screen-start" class="card">
+        <span class="badge">Diagnostic gratuit · 5 minutes</span>
+        <h1>Test AIQ de votre entreprise</h1>
+        <p class="sub">Deux parties : votre maturité IA, puis le temps que vos équipes perdent sur des tâches automatisables. À la fin : votre score, vos économies potentielles et vos priorités.</p>
+        <div class="features">
+          <div>✅ Score de maturité IA sur 5 axes</div>
+          <div>⏱️ Calcul des heures perdues sur des tâches automatisables</div>
+          <div>💰 Estimation de la valeur annuelle récupérable</div>
+          <div>📋 Un plan d'action priorisé (incl. conformité AI Act)</div>
+        </div>
+        <button class="btn" onclick="start()">Commencer le test →</button>
+        <p class="note">Sans engagement · Résultat immédiat</p>
+      </div>
+
+      <div id="screen-quiz" class="card hidden">
+        <div class="meta"><span id="q-num"></span><span id="q-pct"></span></div>
+        <div class="progress-track"><div class="progress-fill" id="q-bar"></div></div>
+        <h2 id="q-text"></h2>
+        <div id="q-answers"></div>
+        <button class="back" onclick="prev()">← Question précédente</button>
+      </div>
+
+      <div id="screen-time" class="card hidden">
+        <h2>⏱️ Combien de temps vos équipes perdent-elles sur ces tâches ?</h2>
+        <p class="sub" style="margin-bottom:20px">Estimez au doigt levé, par personne concernée. Ces tâches sont les premières cibles de l'automatisation IA.</p>
+        <div class="time-grid" id="time-grid"></div>
+        <div style="margin-top:24px">
+          <label class="sub" style="display:block;margin-bottom:6px;font-size:13px">Nombre de personnes concernées dans l'entreprise</label>
+          <input type="range" id="nb-people" min="1" max="50" value="3" oninput="updatePeople(this.value)" />
+          <div class="time-val" id="people-val">3 personnes</div>
+        </div>
+        <button class="btn" style="margin-top:24px" onclick="showResults()">Voir mes résultats →</button>
+        <button class="back" onclick="goTo(1)">← Revenir au quiz</button>
+      </div>
+
+      <div id="screen-result" class="card hidden">
+        <div class="result-big">
+          <span class="score-label" id="r-label"></span>
+          <div class="score-circle" id="r-score"></div>
+          <div class="sub" id="r-msg" style="max-width:480px;margin:8px auto 0"></div>
+        </div>
+
+        <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8">Maturité par axe</h2>
+        <div id="r-axes" style="margin-top:14px"></div>
+
+        <div class="gain-box">
+          <h2 style="font-size:16px;margin-bottom:4px">💸 Le temps que l'IA pourrait vous rendre</h2>
+          <p class="sub" style="margin-bottom:12px">Hypothèse prudente : 60 % de ces tâches automatisables assistées par l'IA, coût horaire moyen chargé de 35 €.</p>
+          <div class="kpis">
+            <div class="kpi"><b id="k-hweek"></b><span>heures / semaine récupérables</span></div>
+            <div class="kpi"><b id="k-hyear"></b><span>heures / an</span></div>
+            <div class="kpi"><b id="k-euro"></b><span>€ de valeur / an</span></div>
+          </div>
+          <p class="sub" style="font-size:13px" id="gain-detail"></p>
+        </div>
+
+        <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-top:28px">Vos priorités d'action</h2>
+        <div class="recs" id="r-recs"></div>
+
+        <div class="lead-form" id="lead-block">
+          <h2 style="font-size:17px;margin-bottom:6px">Recevez votre rapport complet</h2>
+          <p class="sub" style="margin-bottom:14px">Rapport détaillé, benchmark PME françaises et plan d'action 90 jours — envoyé immédiatement par e-mail.</p>
+          <!-- Formulaire Netlify Forms : les réponses arrivent dans
+               Netlify → Forms, avec notification e-mail automatique -->
+          <form id="lead-fields" name="lead-aiq" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+            <p class="hidden"><label>Ne pas remplir : <input name="bot-field" /></label></p>
+            <input type="text" id="f-name" name="nom" placeholder="Votre prénom et nom" required />
+            <input type="text" id="f-company" name="entreprise" placeholder="Votre entreprise" />
+            <input type="email" id="f-email" name="email" placeholder="Votre e-mail professionnel" required />
+            <input type="hidden" id="f-score" name="score" />
+            <input type="hidden" id="f-hours" name="heures" />
+            <input type="hidden" id="f-value" name="valeur" />
+            <button class="btn" type="submit">Recevoir mon rapport 📩</button>
+          </form>
+          <p class="note">Vos données restent confidentielles. Aucun spam, uniquement votre rapport. Une question ? <a href="mailto:lupicocontact@gmail.com" style="color:#a5b4fc">lupicocontact@gmail.com</a></p>
+        </div>
+        <div class="ok hidden" id="lead-ok"></div>
+
+        <button class="back" onclick="resetAll()">Refaire le test</button>
+      </div>
+    </div>
+
+    <script>
+      const AXES = [
+        { id: "strategie", label: "Stratégie & Gouvernance", color: "#6366f1" },
+        { id: "usages", label: "Usages quotidiens", color: "#22c55e" },
+        { id: "processes", label: "Processus & Automatisation", color: "#f59e0b" },
+        { id: "conformite", label: "Conformité & Sécurité (AI Act)", color: "#ef4444" },
+        { id: "competences", label: "Compétences des équipes", color: "#06b6d4" },
+      ];
+
+      const QUESTIONS = [
+        { axis: "strategie", q: "Votre entreprise dispose-t-elle d'une stratégie IA formalisée (objectifs, priorités, budget) ?",
+          a: ["Aucune réflexion structurée sur le sujet", "Quelques discussions, mais rien de formalisé", "Une feuille de route existe et est suivie"], s: [0,1,2] },
+        { axis: "strategie", q: "Qui pilote le sujet IA dans votre organisation ?",
+          a: ["Personne en particulier", "Un référent informel, à côté de son poste", "Un pilote identifié avec un mandat clair"], s: [0,1,2] },
+        { axis: "strategie", q: "Mesurez-vous le retour sur investissement de vos usages IA ?",
+          a: ["Non, on ne mesure rien", "Au cas par cas, sans méthode", "Oui, chaque cas d'usage a des indicateurs suivis"], s: [0,1,2] },
+        { axis: "usages", q: "Comment vos équipes utilisent-elles les outils IA au quotidien ?",
+          a: ["Quasi personne n'utilise d'outil IA", "Quelques personnes bricolent avec ChatGPT", "Des usages réguliers et partagés dans les équipes"], s: [0,1,2] },
+        { axis: "usages", q: "Avez-vous déjà construit des outils IA sur mesure pour vos besoins métier ?",
+          a: ["Non, uniquement des outils grand public", "Un prototype a été testé", "Oui, au moins un outil interne est en production"], s: [0,1,2] },
+        { axis: "processes", q: "Quelle part de vos tâches répétitives (saisie, tri, relances, rédaction…) est assistée par IA ?",
+          a: ["Quasiment aucune", "Quelques tâches isolées", "Des processus complets sont automatisés"], s: [0,1,2] },
+        { axis: "processes", q: "Vos données clients / fournisseurs sont-elles structurées et exploitables par des outils IA ?",
+          a: ["Tout est dispersé (Excel, e-mails, papier…)", "Partiellement structurées", "Oui, centralisées et exploitables"], s: [0,1,2] },
+        { axis: "conformite", q: "Saviez-vous que l'AI Act impose un niveau suffisant de compétences IA à vos équipes concernées ?",
+          a: ["Non, je découvre", "J'en ai entendu parler sans agir", "Oui, et nous avons un plan de mise en conformité"], s: [0,1,2] },
+        { axis: "conformite", q: "Avez-vous encadré l'usage des outils IA (charte, données confidentielles, accès) ?",
+          a: ["Aucune règle, chacun fait ce qu'il veut", "Des consignes orales, pas formalisées", "Une charte formalisée et communiquée"], s: [0,1,2] },
+        { axis: "competences", q: "Vos collaborateurs ont-ils été formés aux outils IA ?",
+          a: ["Aucune formation", "Une partie s'est formée seule", "Un plan de formation IA existe pour tous"], s: [0,1,2] },
+        { axis: "competences", q: "Vos équipes savent-elles rédiger des instructions efficaces (prompts) pour l'IA ?",
+          a: ["Non, elles ne savent pas par où commencer", "Les plus à l'aise oui, pas les autres", "Oui, c'est une pratique répandue et partagée"], s: [0,1,2] },
+        { axis: "competences", q: "Un collaborateur peut-il proposer un cas d'usage IA et le voir testé rapidement ?",
+          a: ["Non, il n'y a pas de canal pour ça", "C'est possible mais long et compliqué", "Oui, il y a un processus simple pour expérimenter"], s: [0,1,2] },
+      ];
+
+      const TIME_TASKS = [
+        { id: "admin", label: "Saisie, copier-coller, mise à jour de fichiers (CRM, Excel…)", hint: "Transfert manuel de données entre outils" },
+        { id: "emails", label: "Rédaction d'e-mails, devis, propositions commerciaux", hint: "Relances, réponses clients types" },
+        { id: "recherche", label: "Recherche et synthèse d'informations", hint: "Veille, analyse de documents, benchmark" },
+        { id: "facturation", label: "Facturation, relances impayés, suivi administratif", hint: "Tâches récurrentes de gestion" },
+        { id: "reporting", label: "Reporting, tableaux de bord, comptes-rendus", hint: "Consolidation et mise en forme de données" },
+        { id: "qualification", label: "Tri et qualification de demandes entrantes", hint: "E-mails, appels, candidatures, leads" },
+      ];
+
+      const COST_PER_HOUR = 35;      // coût horaire chargé moyen
+      const AUTOMATION_RATE = 0.6;   // hypothèse prudente : 60 % automatisable
+
+      let step = 0, answers = {}, screen = 0, timeVals = {};
+
+      function goTo(n) {
+        screen = n;
+        ["screen-start","screen-quiz","screen-time","screen-result"].forEach((id,i)=>{
+          document.getElementById(id).classList.toggle("hidden", i!==n);
+        });
+        window.scrollTo(0,0);
+      }
+
+      function start() { step = 0; answers = {}; goTo(1); renderQ(); }
+
+      function renderQ() {
+        const q = QUESTIONS[step];
+        const pct = Math.round(((step+1)/QUESTIONS.length)*100);
+        document.getElementById("q-num").textContent = "Question " + (step+1) + " / " + QUESTIONS.length;
+        document.getElementById("q-pct").textContent = pct + "%";
+        document.getElementById("q-bar").style.width = pct + "%";
+        document.getElementById("q-text").textContent = q.q;
+        const box = document.getElementById("q-answers");
+        box.innerHTML = "";
+        q.a.forEach((txt,i)=>{
+          const b = document.createElement("button");
+          b.className = "rep"; b.textContent = txt;
+          b.onclick = () => { answers[step] = q.s[i]; step++; step < QUESTIONS.length ? renderQ() : goTo(2); };
+          box.appendChild(b);
+        });
+      }
+
+      function prev() { if (step>0){ step--; renderQ(); } else goTo(0); }
+
+      function buildTimeGrid() {
+        const grid = document.getElementById("time-grid");
+        if (grid.children.length) return;
+        TIME_TASKS.forEach((t,i)=>{
+          timeVals[i] = 2;
+          const div = document.createElement("div");
+          div.className = "time-row";
+          div.innerHTML = '<label>'+t.label+'<div class="hint">'+t.hint+'</div></label>'
+            + '<input type="range" min="0" max="15" step="0.5" value="2" oninput="timeVals['+i+']=parseFloat(this.value);document.getElementById(\'tv-'+i+'\').textContent=this.value+\' h/sem/personne\'">'
+            + '<div class="time-val" id="tv-'+i+'">2 h/sem/personne</div>';
+          grid.appendChild(div);
+        });
+      }
+      function updatePeople(v){ document.getElementById("people-val").textContent = v + (v>1?" personnes":" personne"); }
+
+      function axisScore(id) {
+        const qs = QUESTIONS.map((q,i)=>({q,i})).filter(x=>x.q.axis===id);
+        const max = qs.length*2;
+        const got = qs.reduce((s,x)=>s+(answers[x.i]||0),0);
+        return Math.round((got/max)*100);
+      }
+
+      function showResults() {
+        buildTimeGrid && null;
+        // scores
+        const scores = {}; AXES.forEach(a=>scores[a.id]=axisScore(a.id));
+        const global = Math.round(AXES.reduce((s,a)=>s+scores[a.id],0)/AXES.length);
+        let label,color,msg;
+        if (global>=75){ label="Maturité avancée"; color="#22c55e"; msg="Vous êtes en avance sur le marché. L'enjeu : industrialiser et mesurer le ROI de vos usages."; }
+        else if (global>=45){ label="En construction"; color="#f59e0b"; msg="Les fondations existent. Un plan d'action ciblé peut vous faire passer au niveau supérieur en quelques mois."; }
+        else { label="Zone de risque"; color="#ef4444"; msg="Votre entreprise prend du retard, notamment vis-à-vis des obligations de l'AI Act. Bonne nouvelle : les gains rapides sont nombreux."; }
+        document.getElementById("r-label").textContent = label;
+        document.getElementById("r-label").style.color = color;
+        document.getElementById("r-label").style.background = color+"22";
+        document.getElementById("r-score").textContent = global + "/100";
+        document.getElementById("r-score").style.color = color;
+        document.getElementById("r-msg").textContent = msg;
+
+        document.getElementById("r-axes").innerHTML = AXES.map(a=>
+          '<div class="axis-row"><span class="axis-name">'+a.label+'</span><div class="axis-track"><div class="axis-fill" style="width:'+scores[a.id]+'%;background:'+a.color+'"></div></div><span class="axis-val">'+scores[a.id]+'</span></div>'
+        ).join("");
+
+        // temps perdu
+        const people = parseInt(document.getElementById("nb-people").value,10);
+        const totalH = TIME_TASKS.reduce((s,_,i)=>s+timeVals[i],0);
+        const hWeekAll = totalH * people;                      // heures perdues / semaine (équipe)
+        const hSavedWeek = hWeekAll * AUTOMATION_RATE;        // récupérables
+        const hSavedYear = Math.round(hSavedWeek * 46);       // semaines travaillées
+        const euroYear = Math.round(hSavedYear * COST_PER_HOUR);
+
+        document.getElementById("k-hweek").textContent = Math.round(hSavedWeek);
+        document.getElementById("k-hyear").textContent = hSavedYear.toLocaleString("fr-FR");
+        document.getElementById("k-euro").textContent = euroYear.toLocaleString("fr-FR") + " €";
+
+        const top = TIME_TASKS.map((t,i)=>({t,h:timeVals[i]})).sort((a,b)=>b.h-a.h)[0];
+        document.getElementById("gain-detail").textContent =
+          "Vos équipes perdent aujourd'hui environ " + Math.round(hWeekAll) + " h/semaine sur ces tâches (" +
+          Math.round(hWeekAll*46).toLocaleString("fr-FR") + " h/an). Le poste n°1 : « " + top.t.label + " » avec " + top.h + " h/personne/semaine. C'est typiquement là qu'un premier outil IA fait payer l'investissement en quelques semaines.";
+
+        // recos
+        const recs = [];
+        const sorted = [...AXES].sort((a,b)=>scores[a.id]-scores[b.id]);
+        if (scores.conformite<50) recs.push("🔴 Priorité conformité : organiser la littératie IA et une charte d'usage — exigée par l'AI Act.");
+        if (top.h>=3) recs.push("🔴 Attaquez d'abord « "+top.t.label+" » : c'est votre plus gros gisement de temps, automatisable en quelques jours.");
+        if (sorted[0].id==="competences") recs.push("🔴 Priorité compétences : former les équipes aux usages concrets de leur métier.");
+        if (sorted[0].id==="usages") recs.push("🔴 Priorité usages : outiller immédiatement les 3 tâches les plus chronophages.");
+        if (sorted[0].id==="processes") recs.push("🔴 Priorité processus : structurer les données et automatiser une première tâche de bout en bout.");
+        if (sorted[0].id==="strategie") recs.push("🔴 Priorité stratégie : nommer un pilote IA et bâtir une feuille de route à 90 jours.");
+        recs.push("🟢 Gain rapide : un prototype d'outil sur votre tâche n°1 peut être construit en quelques jours et valider la valeur avant tout investissement.");
+        document.getElementById("r-recs").innerHTML = recs.map(r=>'<div class="rec">'+r+'</div>').join("");
+
+        document.getElementById("f-score").value = global+"/100";
+        document.getElementById("f-hours").value = Math.round(hSavedWeek)+" h/sem";
+        document.getElementById("f-value").value = euroYear.toLocaleString("fr-FR")+" €/an";
+
+        goTo(3);
+      }
+
+      document.getElementById("lead-fields").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const name = document.getElementById("f-name").value.trim();
+        const email = document.getElementById("f-email").value.trim();
+        if (!name || !email.includes("@")) {
+          alert("Merci de renseigner votre nom et un e-mail valide.");
+          return;
+        }
+        // Envoi réel à Netlify Forms (encodage URL-encoded requis)
+        const body = new URLSearchParams(new FormData(form)).toString();
+        try {
+          await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+        } catch (err) {
+          // Même si l'envoi échoue, on affiche la confirmation pour ne pas bloquer l'utilisateur
+        }
+        const ok = document.getElementById("lead-ok");
+        ok.classList.remove("hidden");
+        ok.innerHTML = "✅ Merci " + name + " ! Votre rapport est en route vers <strong>" + email + "</strong>. Un expert vous recontacte sous 48 h pour votre diagnostic personnalisé. Une question ? <a href='mailto:lupicocontact@gmail.com' style='color:#a5b4fc'>lupicocontact@gmail.com</a>";
+        form.classList.add("hidden");
+      });
+
+      function resetAll() { answers={}; step=0; goTo(0);
+        document.getElementById("lead-fields").classList.remove("hidden");
+        document.getElementById("lead-ok").classList.add("hidden");
+        ["f-name","f-company","f-email"].forEach(id=>document.getElementById(id).value="");
+      }
+
+      document.addEventListener("DOMContentLoaded", buildTimeGrid);
+    </script>
+  </body>
+</html>
